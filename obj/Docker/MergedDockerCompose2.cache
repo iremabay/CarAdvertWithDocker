@@ -1,0 +1,50 @@
+name: dockercompose10056610848078842509
+services:
+  mssql:
+    container_name: mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: YourStrong!Passw0rd
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 1433
+        published: "1433"
+        protocol: tcp
+    volumes:
+      - type: volume
+        source: mssql-data
+        target: /var/opt/mssql
+        volume: {}
+      - type: bind
+        source: C:\Users\iabay\source\repos\CarAdverts\CarAdverts\Database\init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+        bind:
+          create_host_path: true
+  webapi:
+    build:
+      context: C:\Users\iabay\source\repos\CarAdverts
+      dockerfile: Dockerfile
+    container_name: caradverts-api
+    depends_on:
+      mssql:
+        condition: service_started
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Server=mssql;Database=CarAdvertsDb;User=sa;Password=YourStrong!Passw0rd;
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 80
+        published: "5000"
+        protocol: tcp
+networks:
+  default:
+    name: dockercompose10056610848078842509_default
+volumes:
+  mssql-data:
+    name: dockercompose10056610848078842509_mssql-data

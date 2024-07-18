@@ -1,0 +1,12 @@
+name: dockercompose10056610848078842509
+services:
+  caradverts:
+    build:
+      context: C:\Users\iabay\source\repos\CarAdverts
+      dockerfile: CarAdverts/Dockerfile
+    image: caradverts
+    networks:
+      default: null
+networks:
+  default:
+    name: dockercompose10056610848078842509_default

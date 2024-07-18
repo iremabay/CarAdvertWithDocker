@@ -1,0 +1,28 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssql
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+      - ./CarAdverts/Database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: caradverts-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=mssql;Database=CarAdvertsDb;User=sa;Password=YourStrong!Passw0rd;
+    ports:
+      - "5000:80"
+    depends_on:
+      - mssql
+
+volumes:
+  mssql-data:
